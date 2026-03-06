@@ -1,12 +1,24 @@
 enum BidOrAsk {
-    Bid(Order),
-    Ask(Order)
+    Bid,
+    Ask
 }   
 
+#[derive(Debug)]
 struct Price{
-    integral
+    integral: u64,
+    fractional: u64,
+    scalar: u64
 }
 
+impl Price{
+    fn new(price: f64) -> Price{
+        let integral = price as u64;
+        let scalar = 100000;
+        let fractional = ((price % 1.0) * scalar as f64) as u64;
+
+        Price{integral, fractional, scalar}
+    }
+}
 struct Limit{
     price: Price,
     orders: Vec<Order>
@@ -23,5 +35,6 @@ impl Order{
 }
 
 fn main() {
-    println!("Hello, world!");
+    let price = Price::new(50.5);
+    println!("{:?}" , price);
 }
