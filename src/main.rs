@@ -1,10 +1,44 @@
+use std::collections::HashMap;
+
 #[derive(Debug)]
 enum BidOrAsk {
-    Bid,
-    Ask
+    Bid, // Represents a buy order
+    Ask  // Represents a sell order
 }   
 
 #[derive(Debug)]
+struct OrderBook {
+    asks: HashMap<Price, Limit>,
+    bids: HashMap<Price, Limit>
+}
+
+impl OrderBook {
+    fn new() -> OrderBook {
+        OrderBook {
+            asks: HashMap::new(),
+            bids: HashMap::new()
+        }
+    }
+
+    fn add_order(&mut self, order: Order, price: f64) {
+        let price_struct = Price::new(price);
+        match order.bid_or_ask {
+            BidOrAsk::Bid => {
+                let price = Price::new(price);
+                match(self.bids.get_mut(&price)){
+                    Some(limit) => println!("already got a limit"),
+                    None => {
+                        let mut limit = Limit::new(price);
+                        limit.add_order(order);
+                        self.bids.insert(price, limit);
+                    }
+                }
+            }
+            BidOrAsk::Ask => {}
+        }
+    }
+}
+#[derive(Debug, Eq, PartialEq, Hash, Clone, Copy )]
 struct Price{
     integral: u64,
     fractional: u64,
@@ -28,8 +62,11 @@ struct Limit{
 
 
 impl Limit{
-    fn new(price: f64) -> Limit{
-        Limit{price: Price::new(price), orders: Vec::new()}
+    fn new(price: Price) -> Limit{
+        Limit{
+            price,
+            orders: Vec::new()
+        }
     }
     fn add_order(&mut self, order: Order){
         self.orders.push(order);
@@ -49,14 +86,11 @@ impl Order{
 }
 
 fn main() {
-    let mut limit = Limit::new(65.5);
-    let price = Price::new(50.5);
     let buy_order = Order::new(BidOrAsk::Bid, 5.5);
-    let sell_order = Order::new(BidOrAsk::Ask, 3.0);
+    let sell_order = Order::new(BidOrAsk::Ask, 2.45);
+    let sell_order_from_bob = Order::new(BidOrAsk::Ask, 1.0);
 
-    limit.add_order(buy_order);
-    limit.add_order(sell_order);
-
-    println!("{:?}" , price);
-    println!("{:?}" , limit);
+    let mut order_book = OrderBook::new();
+    order_book.add_order(buy_order, 4.4);
+    println!("{:?}" , order_book);
 }
