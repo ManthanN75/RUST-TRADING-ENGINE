@@ -80,6 +80,10 @@ impl Limit {
         }
     }
 
+    fn total_volume(&self)-> f64 {
+        self.orders.iter().map(|order| order.size).sum()
+    } 
+
     fn fill_order(&mut self, market_order: &mut Order) {
         for limit_order in self.orders.iter_mut(){
             match market_order.size >= limit_order.size {
@@ -113,7 +117,7 @@ pub struct Order {
 
 impl Order {
     pub fn new(bid_or_ask: BidOrAsk, size: f64) -> Order {
-        Order { size, bid_or_ask }
+        Order {bid_or_ask, size }
     }
 
     pub fn is_filled(&self) -> bool {
@@ -138,7 +142,6 @@ mod tests {
         let mut market_sell_order = Order::new(BidOrAsk::Ask, 199.0);
         limit.fill_order(&mut market_sell_order);
 
-        print!("{:?}", limit);
 
         assert_eq!(market_sell_order.is_filled(), true);
         assert_eq!(limit.orders.get(0).unwrap().is_filled(), true);
