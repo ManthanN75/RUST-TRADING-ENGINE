@@ -1,6 +1,6 @@
 use super::orderbook::{Order, OrderBook};
+use rust_decimal::prelude::*;
 use std::collections::HashMap;
-
 //BTCUSD
 //BTC IS THE BASE
 //USD IS THE QUOTE
@@ -39,16 +39,25 @@ impl MatchingEngine {
 
         println!("opening  new orderbook for market {:?}", pair.to_string());
     }
-
+    
+    pub fn place_market_order(&mut self, pair: TradingPair, order: &mut Order) -> Result<(), String> {
+        match self.orderbooks.get_mut(&pair) {
+            Some(orderbook) => {
+                orderbook.fill_market_order(order);
+                Ok(())
+            }
+            None => Err(format!("Market not found for pair: {}", pair.to_string())),
+        }
+    }
     pub fn place_limit_order(
         &mut self,
         pair: TradingPair,
-        price: f64,
+        price: Decimal,
         order: Order,
     ) -> Result<(), String> {
         match self.orderbooks.get_mut(&pair) {
             Some(orderbook) => {
-                orderbook.add_order(price, order);
+                orderbook.add_limit_order(price, order);
 
                 println!("placed limit order at price level {:?}", price);
                 Ok(())
@@ -61,3 +70,4 @@ impl MatchingEngine {
         }
     }
 }
+
