@@ -6,3 +6,6 @@ makefile linguist-documentation
 # Explicitly promote Rust
 *.rs linguist-detectable=true
 *.rs linguist-language=Rust
+
+target/** linguist-vendored
+target/** linguist-generated
