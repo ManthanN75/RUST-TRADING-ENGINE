@@ -38,3 +38,20 @@ src/
     ├── mod.rs
     ├── engine.rs
     └── orderbook.rs
+```
+Core Components
+1)MatchingEngine
+   The MatchingEngine manages multiple markets.
+   It stores a map of trading pairs to their respective order books.
+
+2)TradingPair
+   Represents a market such as BTC/USD.
+
+3)OrderBook
+   The OrderBook stores bids and asks separately.
+   BTreeMap is used because price levels need to stay sorted.
+
+     Ask orders are matched from lowest price to highest price.
+     Bid orders are matched from highest price to lowest price.
+
+4)
